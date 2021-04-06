@@ -1,0 +1,26 @@
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix geo: <http://www.opengis.net/ont/geosparql#>
+
+ CONSTRUCT {
+ ?place 
+             geo:hasGeometry [a geo:Geometry ; geo:asWKT ?location] ;
+             rdfs:label ?placeLabel ;
+             rdfs:comment ?placeDescription ;
+             skos:altLabel ?placeAltLabel
+ } WHERE {
+    {select ?place ?placeLabel ?placeAltLabel ?placeDescription ?location {
+    	?place wdt:P31/(wdt:P279)* wd:Q548662 ;
+             wdt:P625 ?location ;
+             wdt:P17 wd:Q183
+            
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "de,en". }
+
+    }
+    }
+ }

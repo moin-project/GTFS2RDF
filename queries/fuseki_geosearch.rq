@@ -1,0 +1,12 @@
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
+PREFIX unit: <http://qudt.org/vocab/unit#>
+PREFIX uom: <http://www.opengis.net/def/uom/OGC/1.0/>
+
+  select ?dist where {
+  ?s1 geo:hasGeometry ?geom1 . ?geom1 geo:asWKT ?point1 .
+  ?s2 geo:hasGeometry ?geom2 . ?geom2 geo:asWKT ?point2 .
+  BIND(geof:distance(?geom1, ?geom2, uom:kilometer) as ?dist)
+  FILTER (str(?s1) < str(?s2))
+   #?geom geof:nearby ("Point(6.98973 50.9417)"^^<http://www.opengis.net/ont/geosparql#wktLiteral> 10 unit:Kilometer)
+} limit 100

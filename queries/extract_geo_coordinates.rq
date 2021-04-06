@@ -1,0 +1,10 @@
+prefix schema: <https://schema.org/>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix geo: <http://www.opengis.net/ont/geosparql#>
+select *
+WHERE {
+?s wgs:lat ?lat ;
+wgs:long ?long 
+BIND(strdt("POINT(" + str(?long) + " " + str(?lat) + ")", geo:wktLiteral) as ?point)
+}

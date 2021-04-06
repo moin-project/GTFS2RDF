@@ -1,0 +1,20 @@
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
+PREFIX unit: <http://qudt.org/vocab/unit#>
+PREFIX uom: <http://www.opengis.net/def/uom/OGC/1.0/>
+PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+  SELECT DISTINCT ?wdEntity ?wdEntityLabel ?wdPoint ?stop ?stopName ?stopPoint where {
+  ?wdEntity geo:hasGeometry ?wdGeom ; rdfs:label ?wdEntityLabel .
+  ?wdGeom geo:asWKT ?wdPoint .
+  
+  ?stop wgs:lat ?lat ; 
+            wgs:long ?long ;
+            foaf:name ?stopName
+ BIND(STRDT(CONCAT("POINT(",str(?long)," ",str(?lat),")"), geo:wktLiteral) AS ?stopPoint)
+
+ ?wdGeom geof:nearby (?stopPoint 2 unit:Kilometer)
+}
+order by ?wdEntity ?stop
+limit 100

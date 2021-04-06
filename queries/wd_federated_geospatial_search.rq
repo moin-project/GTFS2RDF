@@ -1,0 +1,35 @@
+prefix schema: <https://schema.org/>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix geo: <http://www.opengis.net/ont/geosparql#>
+
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+
+select ?s ?place ?placeLabel {
+{ select *
+WHERE {
+?s wgs:lat ?lat ;
+wgs:long ?long 
+BIND(strdt("POINT(" + str(?long) + " " + str(?lat) + ")", geo:wktLiteral) as ?point)
+} limit 10
+}
+SERVICE <https://query.wikidata.org/sparql> {
+SELECT ?place ?placeLabel ?location ?dist WHERE {
+ 
+  SERVICE wikibase:around { 
+      ?place wdt:P625 ?location . 
+      bd:serviceParam wikibase:center ?point . 
+      bd:serviceParam wikibase:radius "0.5" . 
+      bd:serviceParam wikibase:distance ?dist.
+  } 
+  # Is a station
+  FILTER EXISTS { ?place wdt:P31/wdt:P279* wd:Q12819564 }
+  SERVICE wikibase:label {
+    bd:serviceParam wikibase:language "de" . 
+  }
+} ORDER BY ASC(?dist) LIMIT 5
+}
+}
