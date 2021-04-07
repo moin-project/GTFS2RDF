@@ -1,0 +1,11 @@
+# get all countries with border to Germany
+
+SELECT ?country2 ?country2Label ?isLandBorder ?isMaritimeBorder ?constraint {
+  VALUES (?country1) {(wd:Q183)}
+  ?border wdt:P31 wd:Q12413618 ;
+          wdt:P17 ?country1 , ?country2 .
+  FILTER (?country1 != ?country2)
+  ?border wdt:P31 wd:Q15104814
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+ORDER BY ?country2Label
