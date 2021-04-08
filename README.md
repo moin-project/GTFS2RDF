@@ -50,6 +50,50 @@ SELECT ?place ?placeLabel ?location ?dist WHERE {
 
 ```
 
+The main problem here is the amount of GTFS stops we have:
+
+```bash
+awk -vFPAT='([^,]*)|("[^"]+")' -vOFS=, '{ print $2 }' $DIR/stops.txt | sort -u | wc -l
+```
+The GTFS.de dump of 08 March:
+
+| Dataset | #stop ids | #stop names | #lat/long |
+| --- | ---: | ---: | ---: |
+| Fernverkehr | 1,349 | 514 | 513 |
+| Regionalverkehr | 14,191 | 7,336 | 7,685 |
+| Nahverkehr | 456,786 | 281,463 | 409,985 |
+
+Sending thousands of single requests is rather slow and might lead to being blocked by the server.
+
+As an alternative, we could gather the station data from Wikidata with the following query:
+
+```sparql
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix geo: <http://www.opengis.net/ont/geosparql#>
+
+ CONSTRUCT {
+ ?place 
+             geo:hasGeometry [a geo:Geometry ; geo:asWKT ?location] ;
+             rdfs:label ?placeLabel ;
+             #rdfs:comment ?placeDescription ;
+             #skos:altLabel ?placeAltLabel
+ } WHERE {
+    
+    	?place wdt:P31/(wdt:P279)* wd:Q548662 ; # transport stop
+             wdt:P625 ?location ;
+             wdt:P17 wd:Q183 # in Germany
+            
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "de,en". }
+ }
+
+```
+
 
 ### Geo-Matching the GTFS and Wikidata entities
 
