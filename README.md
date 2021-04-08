@@ -65,7 +65,16 @@ The GTFS.de dump of 08 March:
 
 Sending thousands of single requests is rather slow and might lead to being blocked by the server.
 
-As an alternative, we could gather the station data from Wikidata with the following query:
+As an alternative, we could gather the station data from Wikidata with the following query. Currently there are `6281` German transport stops with coordinates in Wikidata:
+
+```sparql
+SELECT (count(distinct ?place) as ?cnt) {
+  ?place wdt:P31/(wdt:P279)* wd:Q548662 ;
+         wdt:P17 wd:Q183 ;
+         wdt:P625 ?location 
+ }
+```
+To get the appropriate triples with WKT serialization we can run
 
 ```sparql
 PREFIX bd: <http://www.bigdata.com/rdf#>
@@ -93,7 +102,13 @@ prefix geo: <http://www.opengis.net/ont/geosparql#>
  }
 
 ```
+This data can be loaded into a local triple store with GeoSPARQL support in addition to the GTFS data we converted in the previous step.
 
+Then, a SPARQL query with GeoSPARQL can be used:
+
+```sparql
+
+```
 
 ### Geo-Matching the GTFS and Wikidata entities
 
