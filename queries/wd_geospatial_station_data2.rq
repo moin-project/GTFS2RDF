@@ -9,24 +9,18 @@ PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 
  CONSTRUCT {
  ?place 
-             geo:hasGeometry [a geo:Geometry ; geo:asWKT ?location] .
+             geo:hasGeometry ?geom . ?geom a geo:Geometry ; geo:asWKT ?location .
              ?place rdfs:label ?placeLabel ;
              wdt:P31 ?type
-             #rdfs:comment ?placeDescription ;
-             #skos:altLabel ?placeAltLabel
- } WITH {
+ } WHERE {
     
-    select distinct ?place where {
-    	?place wdt:P31/(wdt:P279)* wd:Q548662 ;            
-               wdt:P17 wd:Q183 ;
-    }
-  } AS %places
-   WHERE {
-    
-   INCLUDE %places
+   ?place wdt:P31/(wdt:P279)* wd:Q548662 ;            
+               wdt:P17 wd:Q183 .
+               
    ?place wdt:P625 ?location ;
           wdt:P31 ?type ;
           rdfs:label ?placeLabel
           filter(lang(?placeLabel) = "de")
+   BIND(bnode(str(?location)) as ?geom)
                   
  }
