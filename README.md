@@ -83,72 +83,63 @@ PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX wikibase: <http://wikiba.se/ontology#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-prefix geo: <http://www.opengis.net/ont/geosparql#>
-
- CONSTRUCT {
- ?place 
-             geo:hasGeometry [a geo:Geometry ; geo:asWKT ?location] ;
-             rdfs:label ?placeLabel ;
-             #rdfs:comment ?placeDescription ;
-             #skos:altLabel ?placeAltLabel
- } WHERE {
-    
-    	?place wdt:P31/(wdt:P279)* wd:Q548662 ; # transport stop
-             wdt:P625 ?location ;
-             wdt:P17 wd:Q183 # in Germany
-            
-    SERVICE wikibase:label { bd:serviceParam wikibase:language "de,en". }
- }
-
-```
-For whatever reason, this query is missing triples in the result, for example the location of `wd:Q681785` isn't contained in the triples. Not sure what happens here ... it does return the label "Bahnhof Berlin Zoologischer Garten"@de, but maybe the `SERVICE` clause is doing weird things ...
-
-We do have another SPARQL query which seems to work:
-```sparql
-PREFIX bd: <http://www.bigdata.com/rdf#>
-PREFIX wd: <http://www.wikidata.org/entity/>
-PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-PREFIX wikibase: <http://wikiba.se/ontology#>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 
  CONSTRUCT {
- ?place rdfs:label ?placeLabel ;
- 	#rdfs:comment ?placeDescription ;
-        #skos:altLabel ?placeAltLabel ;
-             #geo:hasGeometry [ a geo:Geometry ; geo:asWKT ?location ] ;
-             geo:hasGeometry ?geom . ?geom a geo:Geometry ; geo:asWKT ?location .
-           
- #?place wdt:P31 ?type
-             
+ ?place 
+             geo:hasGeometry [ a geo:Geometry ; geo:asWKT ?location ] ;
+           rdfs:label ?placeLabel ;
+             #wdt:P31 ?type
+             #rdfs:comment ?placeDescription ;
+             #skos:altLabel ?placeAltLabel
  } WITH {  
-    SELECT DISTINCT ?place ?placeLabel WHERE {
+    SELECT DISTINCT ?place where {      
     	?place wdt:P31/(wdt:P279)* wd:Q548662 ;            
                wdt:P17 wd:Q183 ;
-               rdfs:label ?placeLabel
-               Filter(lang(?placeLabel) = 'de')
-                  
      }
   } AS %places
    WHERE {
     
    INCLUDE %places
-   ?place wdt:P625 ?location ;
-          #wdt:P31 ?type ;
-   BIND(bnode(str(?location)) as ?geom)                 
+   ?place wdt:P625 ?location .
+          #wdt:P31 ?type 
+   #BIND(bnode(str(?location)) as ?geom)
+   #hint:Query hint:queryEngineChunkHandler "Managed"
+   hint:Query hint:constructDistinctSPO false . 
+   SERVICE wikibase:label { bd:serviceParam wikibase:language "de,en". }                  
  }
+
 ```
+There seems to be some issue with the `CONSTRUCT` optimizer, in particular, without the query hint this query is missing triples randomly in the result on each execution, for example the location of `wd:Q681785` isn't contained in the triples. 
 
 This data can be loaded into a local triple store with GeoSPARQL support in addition to the GTFS data we converted in the previous step.
 
-Then, a SPARQL query with GeoSPARQL can be used:
+Then, a SPARQL query with GeoSPARQL can be used to find matching candidates based on the coordinates:
 
 ```sparql
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
+PREFIX unit: <http://qudt.org/vocab/unit#>
+PREFIX uom: <http://www.opengis.net/def/uom/OGC/1.0/>
+PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
+SELECT DISTINCT ?wdEntity ?wdEntityLabel ?wdPoint ?stop ?stopName ?stopPoint where {
+  ?wdEntity geo:hasGeometry ?wdGeom ;
+            rdfs:label ?wdEntityLabel .
+  ?wdGeom geo:asWKT ?wdPoint .
+  
+  ?stop geo:hasGeometry ?stopGeom ;
+        foaf:name ?stopName .
+ ?stopGeom geo:asWKT ?stopPoint .
+ 
+ ?wdGeom geof:nearby (?stopPoint 1 unit:Kilometer)
+}
+order by ?wdEntityLabel ?stop
 ```
+
+
 
 ### Geo-Matching the GTFS and Wikidata entities
 
