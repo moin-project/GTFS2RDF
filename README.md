@@ -103,8 +103,9 @@ prefix geo: <http://www.opengis.net/ont/geosparql#>
 
 ```
 For whatever reason, this query is missing triples in the result, for example the location of `wd:Q681785` isn't contained in the triples. Not sure what happens here ... it does return the label "Bahnhof Berlin Zoologischer Garten"@de, but maybe the `SERVICE` clause is doing weird things ...
-We have another SPARQL query which seems to work:
-```
+
+We do have another SPARQL query which seems to work:
+```sparql
 PREFIX bd: <http://www.bigdata.com/rdf#>
 PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
