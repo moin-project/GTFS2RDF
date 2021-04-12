@@ -102,6 +102,45 @@ prefix geo: <http://www.opengis.net/ont/geosparql#>
  }
 
 ```
+For whatever reason, this query is missing triples in the result, for example the location of `wd:Q681785` isn't contained in the triples. Not sure what happens here ... it does return the label "Bahnhof Berlin Zoologischer Garten"@de, but maybe the `SERVICE` clause is doing weird things ...
+We have another SPARQL query which seems to work:
+```
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+
+ CONSTRUCT {
+ ?place rdfs:label ?placeLabel ;
+ 	#rdfs:comment ?placeDescription ;
+        #skos:altLabel ?placeAltLabel ;
+             #geo:hasGeometry [ a geo:Geometry ; geo:asWKT ?location ] ;
+             geo:hasGeometry ?geom . ?geom a geo:Geometry ; geo:asWKT ?location .
+           
+ #?place wdt:P31 ?type
+             
+ } WITH {  
+    SELECT DISTINCT ?place ?placeLabel WHERE {
+    	?place wdt:P31/(wdt:P279)* wd:Q548662 ;            
+               wdt:P17 wd:Q183 ;
+               rdfs:label ?placeLabel
+               Filter(lang(?placeLabel) = 'de')
+                  
+     }
+  } AS %places
+   WHERE {
+    
+   INCLUDE %places
+   ?place wdt:P625 ?location ;
+          #wdt:P31 ?type ;
+   BIND(bnode(str(?location)) as ?geom)                 
+ }
+```
+
 This data can be loaded into a local triple store with GeoSPARQL support in addition to the GTFS data we converted in the previous step.
 
 Then, a SPARQL query with GeoSPARQL can be used:
