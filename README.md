@@ -115,6 +115,8 @@ There seems to be some issue with the `CONSTRUCT` optimizer, in particular, with
 
 This data can be loaded into a local triple store with GeoSPARQL support in addition to the GTFS data we converted in the previous step.
 
+### Geo-Matching the GTFS and Wikidata entities
+
 Then, a SPARQL query with GeoSPARQL can be used to find matching candidates based on the coordinates:
 
 ```sparql
@@ -138,9 +140,4 @@ SELECT DISTINCT ?wdEntity ?wdEntityLabel ?wdPoint ?stop ?stopName ?stopPoint whe
 }
 order by ?wdEntityLabel ?stop
 ```
-
-
-
-### Geo-Matching the GTFS and Wikidata entities
-
 
