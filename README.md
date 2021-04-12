@@ -113,6 +113,10 @@ PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 ```
 There seems to be some issue with the `CONSTRUCT` optimizer, in particular, without the query hint this query is missing triples randomly in the result on each execution, for example the location of `wd:Q681785` isn't contained in the triples. 
 
+The previous query does only return transport stop data for Germany, the GTFS dataset for _Fernverkehr_ will need additional data from other European countries:
+
+TODO
+
 This data can be loaded into a local triple store with GeoSPARQL support in addition to the GTFS data we converted in the previous step.
 
 ### Geo-Matching the GTFS and Wikidata entities
