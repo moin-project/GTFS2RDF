@@ -25,8 +25,6 @@ java -jar "$CWD/rmlmapper.jar" -v -f "$CWD/functions_moin.ttl" -m "$CWD/gtfsde-r
 
 ```
 
-One of the limitations of RML seems to be that we can't generate
-
 
 ### Download Wikidata Geospatial station data
 
@@ -144,4 +142,39 @@ SELECT DISTINCT ?wdEntity ?wdEntityLabel ?wdPoint ?stop ?stopName ?stopPoint whe
 }
 order by ?wdEntityLabel ?stop
 ```
+Depending on the max. nearby distance given, there might be multiple matches per stop. In that case we could a) simply use the nearest Wikidata entity or b) add compute some additional similarity measure based on the names.
 
+#### LIMES
+If we're doing a more sophisticated interlinking, LIMES would be the first choice here. It allows to combine multiple metrics and provides for string similarity measure as well as geospatial measures.
+
+Usage: Download latest LIMES from [here](https://github.com/dice-group/LIMES/releases)
+
+```
+java -jar limes-core-1.7.4.jar limes_config.xml
+```
+The config file contains either a path to the files containing both datasets or the SPARQL endpoint URL. If we load all data into a single SPARQL endpoint  - as we did in our case - we can add some additional graph pattern to distinguish the source and target entities.
+
+TODO show config
+TODO process output
+
+### Reverse Geocoding
+We also apply reverse geocoding by using OSM data via nominatim to gather address data. While there is a public Nominatim service, it's not meant to be used heavily, thus, we setup our local Nominatim with OSM data for Germany. Luckily, there is a Docker setup that basically does what we need, thus, we only have to setup Docker and run
+
+```
+docker run -it --rm \
+  -e PBF_URL=https://download.geofabrik.de/europe/germany-latest.osm.pbf \
+  -e REPLICATION_URL=https://download.geofabrik.de/europe/germany-updates/ \
+  -e IMPORT_WIKIPEDIA=true \
+  -p 8888:8080 \
+  --name nominatim \
+  -v nominatim-data:/var/lib/postgresql/12/main \
+  mediagis/nominatim:3.6
+```
+This takes "some" time ... 
+Afterwards, the service will be available at port 8888 - change it if this port is already been used.
+
+#### Call Nominatim from SPARQL
+We can use Apache Jena custom Javascript based functions to call Nominatim directly from SPARQL and add RDF triples to the existing dataset:
+```
+update --data data.nt --set arq:logExec=FINE --set arq:js-library=arq-functions.js --update GTFS2RDF/queries/add_osm_address_data.ru --dump > data_with_osm.nt
+```
