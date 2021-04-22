@@ -1,0 +1,8 @@
+PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+ PREFIX js: <http://jena.apache.org/ARQ/jsFunction#>
+  PREFIX osmm: <https://www.openstreetmap.org/meta/>
+   select ?country ?state ?city (count(?s) as ?cnt) {
+    {select ?s (js:json(?addr, 'country') as ?country) (js:json(?addr, 'state') as ?_state) (coalesce(js:json(?addr, 'city'),js:json(?addr, 'town')) as ?city) {?s osmm:address ?addr } }
+     BIND(if(?country = 'Deutschland' && (!bound(?_state) || ?_state = ''), 'Hamburg', ?_state) as ?state) 
+     } group by ?country ?state ?city
+     order by ?country ?state desc(?cnt)

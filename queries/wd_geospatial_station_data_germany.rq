@@ -9,24 +9,25 @@ PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 
  CONSTRUCT {
  ?place 
-             geo:hasGeometry ?geom . ?geom a geo:Geometry ; geo:asWKT ?location .
-             ?place rdfs:label ?placeLabel ;
+             geo:hasGeometry [ a geo:Geometry ; geo:asWKT ?location ] ;
+           rdfs:label ?placeLabel ;
              #wdt:P31 ?type
              #rdfs:comment ?placeDescription ;
              #skos:altLabel ?placeAltLabel
  } WITH {  
-    SELECT DISTINCT ?place where {
+    SELECT DISTINCT ?place where {      
     	?place wdt:P31/(wdt:P279)* wd:Q548662 ;            
                wdt:P17 wd:Q183 ;
-    }
+        filter not exists{?place wdt:P31 wd:Q4663385} # omit former railway stations
+     }
   } AS %places
    WHERE {
     
    INCLUDE %places
-   ?place wdt:P625 ?location ;
-          #wdt:P31 ?type ;
-          rdfs:label ?placeLabel
-          filter(lang(?placeLabel) = "de")
-   BIND(bnode(str(?location)) as ?geom)
-                  
+   ?place wdt:P625 ?location .
+          #wdt:P31 ?type 
+   #BIND(bnode(str(?location)) as ?geom)
+   #hint:Query hint:queryEngineChunkHandler "Managed"
+   hint:Query hint:constructDistinctSPO false . 
+   SERVICE wikibase:label { bd:serviceParam wikibase:language "de,en". }                  
  }

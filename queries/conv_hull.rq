@@ -1,0 +1,19 @@
+PREFIX geos: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX geom: <http://geovocab.org/geometry#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+prefix geof: <http://www.opengis.net/def/function/geosparql/>
+
+select (geof:convexHull(?multipoint) as ?hull) ?multipoint {
+select (STRDT(CONCAT("MultiPoint(", GROUP_CONCAT(REPLACE(str(?point), "Point", ""); SEPARATOR = ", "), ")"), geos:wktLiteral) as ?multipoint) {
+{
+    SELECT DISTINCT ?point
+    WHERE {
+    ?t rdfs:label|foaf:name ?wdLabel .
+    ?t geos:hasGeometry ?geom . ?geom geos:asWKT ?point .
+    }
+    limit 50
+}
+}
+}

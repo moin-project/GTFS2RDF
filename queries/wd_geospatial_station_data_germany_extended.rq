@@ -1,0 +1,40 @@
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+
+ CONSTRUCT {
+ ?place 
+             geo:hasGeometry [ a geo:Geometry ; geo:asWKT ?location ] ;
+           rdfs:label ?placeLabel .
+             #wdt:P31 ?type
+             #rdfs:comment ?placeDescription ;
+             #skos:altLabel ?placeAltLabel
+  ?place wdt:P137 ?operator .
+  ?place wdt:P1192 ?conn_service .
+  ?place wdt:P81 ?conn_line . 
+ } WITH {  
+    SELECT DISTINCT ?place where {      
+    	?place wdt:P31/(wdt:P279)* wd:Q548662 ;            
+               wdt:P17 wd:Q183 ;
+        filter not exists{?place wdt:P31 wd:Q4663385} # omit former railway stations
+     }
+  } AS %places
+   WHERE {
+    
+   INCLUDE %places
+   ?place wdt:P625 ?location .
+   OPTIONAL {?place wdt:P137 ?operator}
+   OPTIONAL {?place wdt:P1192 ?conn_service}
+   OPTIONAL {?place wdt:P81 ?conn_line}
+    
+          #wdt:P31 ?type 
+   #BIND(bnode(str(?location)) as ?geom)
+   #hint:Query hint:queryEngineChunkHandler "Managed"
+   hint:Query hint:constructDistinctSPO false . 
+   SERVICE wikibase:label { bd:serviceParam wikibase:language "de,en". }                  
+ }
