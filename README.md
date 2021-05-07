@@ -209,7 +209,11 @@ SELECT
     BIND(spatialF:convertLatLon(?lat, ?lon) AS ?point)
   }
 }
+
+# Convex hull polygon:
+# POLYGON((48.876976 2.35912, 44.50614 11.343411, 47.464355 19.020456, 47.50038 19.085072, 49.78366 22.776363, 49.939533 22.829151, 52.25155 21.052336, 54.52084 18.529556, 56.150074 10.204997, 56.043564 9.924497, 54.906837 8.310925, 52.37919 4.899431, 48.876976 2.35912))
 ```
+
 
 ![Raw data points](images/2021-05-07-gtfs.de-international-railways-raw.png)
 ![Convex hull](images/2021-05-07-gtfs.de-international-railways-convex-hull.png)
