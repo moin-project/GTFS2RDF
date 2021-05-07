@@ -178,3 +178,39 @@ We can use Apache Jena custom Javascript based functions to call Nominatim direc
 ```
 update --data data.nt --set arq:logExec=FINE --set arq:js-library=arq-functions.js --update GTFS2RDF/queries/add_osm_address_data.ru --dump > data_with_osm.nt
 ```
+
+
+
+## Simplifying Polygons
+
+The following example shows how to compute a convex hull in SPARQL using spatial extensions.
+[RDF Processing Toolkit](https://github.com/SmartDataAnalytics/RdfProcessingToolkit/)
+
+
+```bash
+java -jar rpt.jar integrate  gtfs.nt hull.sparql
+```
+
+```sparql
+#hull.sparql
+
+PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX spatialF: <http://jena.apache.org/function/spatial#>
+SELECT
+  ?points
+  (geof:convexHull(?points) AS ?convexHull)
+{
+  SELECT (geof:collect(?point) AS ?points) {
+    []
+      wgs:lat ?lat ;
+      wgs:long ?lon ;
+    .
+
+    BIND(spatialF:convertLatLon(?lat, ?lon) AS ?point)
+  }
+}
+```
+
+![Raw data points](images/2021-05-07-gtfs.de-international-railways-raw.png)
+![Convex hull](images/2021-05-07-gtfs.de-international-railways-convex-hull.png)
+
