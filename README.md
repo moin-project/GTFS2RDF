@@ -184,11 +184,11 @@ update --data data.nt --set arq:logExec=FINE --set arq:js-library=arq-functions.
 ## Simplifying Polygons
 
 The following example shows how to compute a convex hull in SPARQL using spatial extensions.
-[RDF Processing Toolkit](https://github.com/SmartDataAnalytics/RdfProcessingToolkit/)
+The [RDF Processing Toolkit](https://github.com/SmartDataAnalytics/RdfProcessingToolkit/) is a convenient tool for that purpose.
 
 
 ```bash
-java -jar rpt.jar integrate  gtfs.nt hull.sparql
+java -jar rpt.jar integrate gtfs.nt hull.sparql
 ```
 
 ```sparql
