@@ -400,3 +400,6 @@ The generated RDF data is shaped as follows:
         moino:drivingDistance  "616709.4550707102"^^xsd:double ;
         moino:drivingDuration  "19910.0"^^xsd:double .
 ```
+TODO we could make use of units for distance and duration
+
+There is also the opportunity to use an n-ary node in RDF to model the connection. That means, we generate an RDF node per connection and attach all data to the node. More the old-school way and maybe less elegant than the evolving RDF star notation.
