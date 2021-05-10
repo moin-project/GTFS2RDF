@@ -391,3 +391,12 @@ INSERT {
 
 }
 ```
+The generated RDF data is shaped as follows:
+``` turtle
+<http://moin-project.org/data/Berlin> <http://www.w3.org/2002/07/owl#sameAs> <http://www.wikidata.org/entity/Q64> .
+<< moin:Berlin moino:connectedTo moin:Mannheim >>
+        moino:route            "LINESTRING(13.388790000000002 52.517030000000005,..."^^geo:wktLiteral ;
+	moino:transportType    moino:car ;
+        moino:drivingDistance  "616709.4550707102"^^xsd:double ;
+        moino:drivingDuration  "19910.0"^^xsd:double .
+```
