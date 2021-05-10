@@ -218,3 +218,176 @@ SELECT
 ![Raw data points](images/2021-05-07-gtfs.de-international-railways-raw.png)
 ![Convex hull](images/2021-05-07-gtfs.de-international-railways-convex-hull.png)
 
+## Convert Reachability Data to RDF
+### Input
+The current data is avaibale at https://project.nes.uni-due.de/moin/data/
+It comprises data for 20 up to 200 cities with information about driving duration, distance and route.
+For example the city Berlin
+```json
+{
+      "id": 45108,
+      "creationTime": 1578754123907,
+      "modificationTime": 1584057162560,
+      "deleted": false,
+      "coordinate": {
+        "latitude": 52.5170365,
+        "longitude": 13.3888599
+      },
+      "timezone": "Europe/Berlin",
+      "capital": true,
+      "population": 3531201,
+      "wikipedia": "de:Berlin",
+      "type": "CITY",
+      "country": {
+        "id": 560,
+        "creationTime": 1578750581221,
+        "modificationTime": 1584055362236,
+        "deleted": false,
+        "coordinate": {
+          "latitude": 51.0834196,     "es": "Alemania",
+          "it": "Germania"
+        }
+      },
+      "state": {
+        "id": 2741,
+        "creationTime": 1578750897659,
+        "modificationTime": 1578750897659,
+        "deleted": false,
+        "coordinate": {
+          "latitude": 52.506934799999996,
+          "longitude": 13.397482681501469
+        },
+        "timezone": "Europe/Berlin",
+        "population": 3440441,
+        "wikipedia": "de:Berlin",
+        "country": {
+          "id": 560,
+          "creationTime": 1578750581221,
+          "modificationTime": 1584055362236,
+          "deleted": false,
+          "coordinate": {
+            "latitude": 51.0834196,
+            "longitude": 10.4234469
+          },
+          "names": {
+            "en": "Germany",
+            "local": "Deutschland",
+            "fr": "Allemagne",
+            "de": "Deutschland",
+            "es": "Alemania",
+            "it": "Germania"
+          }
+        },
+        "names": {
+          "en": "Berlin",
+          "local": "Berlin",
+          "fr": "Berlin",
+          "de": "Berlin",
+          "es": "Berlín",
+          "it": "Berlino"
+        }
+      },
+      "names": {
+        "en": "Berlin",
+        "local": "Berlin",
+        "fr": "Berlin",
+        "de": "Berlin",
+        "es": "Berlín",
+        "it": "Berlino"
+      }
+    }
+```
+and routing data like 
+```json
+{
+        "distance": 476101.81811425375,
+        "drivingDistance": 574141.9718600416,
+        "drivingDuration": 19090,
+        "drivingRoute": "mfp_I}~upAdMkAt@bYhBbQkFzBnB`XqEUcChC`IlzC{ArKhCnHnIv{CsAzIxBdGtNtpF`Ll@nEyC`RnDrFjDjAjFLtJpAlEtyBryC`}@|eAjhF|dHnHnDje@nGxHuDxJ_PnEmCpu@aKnPjBxH~F`dAdmAbNjThIbYbXfdB|FvOjHbJfd@tWlKnDdx@CtIjBhJnHlSd_@zM|JtHfAhbB{@`JnBpMnInJdMhI~Tfg@niClJnVfjAnnAblAxr@|GnJ`GvRfB`V@n\\mCbxCbBlUfLfi@r@nY{ArRyWfwAsBbUaA~{ElCvZneAzsH`CvV?|NmA|LiD|LieDfoIcJl_@yz@plE_JvRsPjOeFzHuEnMyCdRkEdcBsMn_De@`]`In_DeB`dC`]l`HTvk@gFdo@{jAvmG_Ifo@{Az]k@jlAgA|wD~@zl@tE~j@|Jfk@zh@ntBrPz`@rSpWr_ChrBj]z_@|wBtkCdo@fjAjOj^nGjWjFra@hnAfwPnJpc@hsAzhEnEhRtEd]fBl]Eha@cGvmBiYzjH[va@|@xWnxBb_]J`V}RhjMbKj~LjDnhAdj@llJfCrn@_VzyJj@zj@|^jsDrYn~GbGpo@tI|^hI`TtxC|jGdPhh@flB|xKt]zjEtAn`@qAxi@oFrc@}Ij^}q@`}BqbApkFwExb@y@dVD~]hFlmF`@tdEk@dg@k\\~cIeq@p{JoPnwHcEnc@iUh`BiDtd@q@~|@xFffBiFxqBkHvr@cb@vxBoDfk@gDlwAeDla@qGh]ob@vzA}p@vmBgIxNa\\rc@aWhn@aNfVamAnnAyUz]aMn\\sPbs@iElWoI`hAyFfa@qG~Vod@xtAoLji@eF~e@yJjiB}I~n@{In^ynAj~D}t@zkDuFv]}D~a@mRzfFw@zt@`Bji@x\\xkGpBniC}H~sHm@j~GeRr`GwBzjGwA|b@}Dfd@czAb|Jcd@v~EcMntCoHz_CsDdnD~@zx@|[j`GHtf@wHjkDZfdB_Btq@_Hhp@qJbe@qd@hxAqu@htByKlf@sFpb@m\\xyGaB|x@cA`cBkPxsDgJlw@}yAt~Hi_@tpCoCtd@aKxwEuUzvDyWdkFeGpu@iE`YgMtf@}r@boBi|@leB{Udl@qMve@aMnl@yHxq@k@|Wh@p`@|R~oBjCbaAkBj|FoOngCg@t|@vJfpCld@jbEpBvTd@|UvBnORjr@eM|zC}@diA`Kx|ChCvkB`C~a@|Dr]|Mpo@zObd@xdBlrDfKpRfyAl{BrkAbaCh{@pmAzMbOvr@ln@jg@dYfShRxz@|yAl\\du@xWf`@tzD|gDvNhPpx@`xAjdAloChQnXd_@t]bQpUll@v{AlN~Tv]~_@nM|QzKlVhHhWzGpc@bWxlD|GjVjd@t|@fH~VfCdZ[pk@dAnSzb@~hCjAvOeA`vAqLpw@mGnbAcAx|@{DxaAfC`i@PnVkJ`hAh@pYrG|nAkGxkC|BlWlLhj@jBjY{Ar]wNhqAwDptA|@vQbJrp@fD~q@pJlj@rAvOUlkCv@tb@`Db]lLnw@rDxs@jN|aAfC`a@Xv}BoIpoA`Ahx@kAhfA`Ap|@nC|UbQft@xKfv@xDbQhFtLbLzMpt@dc@nT`Gx[tAbK`D~_A|r@drA|Yll@de@|LxUj\\noA~YjjBdHt}AzFho@tFxY~GnQhLdPvT~MjP|Ap{@gH|ShGzOpNpl@rdAzo@deBrJrSvKfQr\\d_@lL|Qtm@fmBpO`ZdUzX|[zT`jAbYty@ja@vSzOh`@tk@dRdQzQzIvlAt[~X`LjsAnaA`oAha@bK`@`ZaDf`@fC|KrBjK`I~HxNpSbn@v^|jBpJf`@`Mx\\ne@`aA`j@xsBlMz[hKhP|P|P|j@pWjZnSx}AleBbUt`@pHpTfHl^zN|gAbVf~BpM|r@vUbu@bd@|{@xLnYdu@znBzKza@lFbb@nR|tCtl@jfDlQ~wBbDnWvH|^dc@`mA`l@vdDbi@jvBpFjYv|@riLxIjr@fo@bjDjX|bBfYr_AdE|RjTxmBpXfhBvdBtkHfh@tnDbEfSxG`TdJhRnKlNlL`KxlGfaDrWnFn}AjFtO`EtOpIhNrM|}B|rClMjUr_@f_AvM`TjShR|yAtcAxMrO~K~RxKb[zo@d`Cnv@v{CvFn^tB|ZvIjfE|Fn}@tYhxCvb@~mDr}@rkGpDh]hAnZCpgAiAbPqHdRAxHbChI|DzDbEf@|JiIbFeA`q@vMpThNvTdRnYl_@pQvQxQfMtW`KlTjDhyBzK|dCv\\~yA~f@|N`IdNpMrnApmBdf@xh@~Mh[fM~j@lInU`KjOng@fi@pJjQ`JrUfTv{@l~@``FdKrZfKvO`O~Kd|Anc@~RvOrGhNvIl[`FjLrm@vy@lWph@fM~_@dIt^d^fkCnVj_AvKxt@vFpVhL~VbLnMrK~Gfu@tYfItG~HtN`p@p|Bp_@bcAxIxYtLpj@`Dj^xFzRlEne@xElV~GdPpRnV|HrO`EvOzFbi@hDlPzv@`oBjb@hcAnYpa@pMxYhIh`@dLxgA`Mrm@lRnj@hj@bkAdK~NxNrKtItCxx@lK|\\lTtL|DlOGlq@ePrN~BfG|FhOxUfYtRbGfMvKf`@~Tz\\n]b{@jJnL`OzGrQJjWkFxLkFhPeMfIeC|]jDjO{DpKyLrp@ssA|HuLjPqNpWoHbVz@fTfJjKtJlu@p~@hNtIrUxA~tAoJzOv@xNlEn~@lq@lLlO`GbQjWvzA|GpPtb@j^tXll@rIlLlGdEnUdGxMtGnK|J`KvOzLp^lVjyApIj`@pJzXhOtW~[z]nRnOpPfE|ZOvQhEhzAn}@xRtRdNxYhIh_@fPdgAdSlyBfFp[jJx[bq@tdBpHlVfi@b|BnNpkAxEvX~Rf}@d\\bpAbDlWpA|WS~_@}Ezy@l@zXpDbW|HlTfsAbyCvOtb@zTfv@jNp]nPd[bo@`dAfRf`@bTrv@b@rIsCh@c@uCbAkDtr@kcA~b@}i@~e@kg@nWsQvd@oSbf@oe@p_@sQva@oa@rEXjIiBxT}t@nDwTvBi]|EKaA_QCkWvJs@CdIlC?C_GbCd@"
+      }
+```
+
+
+This data can be converted by means of the folowwing SPARQL Update statements using the RDF Processing Toolkit (RPT):
+
+``` sparql
+# insert the connection data
+PREFIX moin: <http://moin-project.org/data/>
+PREFIX moino: <http://moin-project.org/ontology/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX url: <http://jsa.aksw.org/fn/url/>
+PREFIX json: <http://jsa.aksw.org/fn/json/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+INSERT {
+	?src moino:connectedTo ?target .
+	<<?src moino:connectedTo ?target>> moino:drivingDuration ?drivingDuration ;
+		                           moino:drivingDistance ?drivingDistance ; 
+		                           moino:transportType ?transportType ;
+		                           moino:route ?routeWkt ;
+		                           owl:sameAs ?item 
+} WHERE {
+  # currently hard-coded as we only have car driving data
+	BIND(moino:car as ?transportType)
+  
+  # directly use data from HTTP
+	<https://project.nes.uni-due.de/moin/data/driving-summary-100.json> url:text ?text . 
+	BIND(STRDT(?text, xsd:json) AS ?json)
+
+	BIND(json:path(?json, "$.cities") AS ?cityArr1)
+	BIND(json:path(?json, "$.cities") AS ?cityArr2)
+	BIND(json:path(?json, "$.routes") AS ?routesArr)
+
+  # Unnest routes
+	?routesArr json:unnest (?routeTargetsArr ?i) .
+	?routeTargetsArr json:unnest (?route ?j) .
+
+	FILTER(BOUND(?route)) # omit unbound routes which happens for src and target being the same
+
+	BIND(json:path(?route, "$.drivingDuration") AS ?drivingDuration)
+	BIND(json:path(?route, "$.drivingDistance") AS ?drivingDistance)
+	BIND(json:path(?route, "$.distance") AS ?distance)
+	BIND(json:path(?route, "$.drivingRoute") AS ?routeGooglePolyline)
+	BIND(geof:parsePolyline(?routeGooglePolyline) as ?routeWkt)
+ 
+	?cityArr1 json:unnest (?city1 ?i) .
+	BIND(json:path(?city1, "$.names.local") AS ?name1)
+
+	?cityArr2 json:unnest (?city2 ?j) .
+	BIND(json:path(?city2, "$.names.local") AS ?name2)
+
+
+	BIND(iri(concat(str(moin:), encode_for_uri(?name1))) as ?src)
+	BIND(iri(concat(str(moin:), encode_for_uri(?name2))) as ?target)
+}
+```
+In a second step, we can do a rather simple mapping to Wikidata entities using the Wikipedia title string (if exsist) or simply the name of the city:
+``` sparql
+# insert Wikidata entity links
+INSERT {
+	?city owl:sameAs ?item 
+} WHERE {
+	<https://project.nes.uni-due.de/moin/data/driving-summary-100.json> url:text ?text . 
+	BIND(STRDT(?text, xsd:json) AS ?json)
+
+	BIND(json:path(?json, "$.cities") AS ?cityArr)
+	?cityArr json:unnest (?cityEntry ?i) .
+	BIND(json:path(?cityEntry, "$.names.local") AS ?name)
+
+	BIND(iri(concat(str(moin:), encode_for_uri(?name))) as ?city)
+
+	BIND(COALESCE(strafter(json:path(?cityEntry, "$.wikipedia"), "de:"), ?name) as ?fragment)
+	BIND(IRI(CONCAT("https://de.wikipedia.org/wiki/", encode_for_uri(?fragment))) AS ?sitelink)
+	
+
+	BIND(if(bound(?sitelink), ?sitelink, <b>) as ?in)
+	OPTIONAL {
+		SERVICE <https://query.wikidata.org/sparql> {
+			?in schema:about ?item ;
+			    schema:isPartOf <https://de.wikipedia.org/>
+		 
+		}
+	}
+
+}
+```
