@@ -1,0 +1,20 @@
+# compute distance for each city to centroid of polygon spanning all cities
+
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX uom: <http://www.opengis.net/def/uom/OGC/1.0/>
+PREFIX moin: <http://moin-project.org/data/>
+PREFIX moino: <http://moin-project.org/ontology/>
+PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+
+SELECT ?city ?distance_centroid {
+	  	  # convex hull
+		  { SELECT (geof:convexHull(geof:collect(?point)) AS ?convexHull) { ?s geo:defaultGeometry/geo:asWKT ?point } }
+
+		  # centroid of the convex hull
+		  BIND(geof:centroid(?convexHull) as ?centroid)
+		  ?city geo:defaultGeometry/geo:asWKT ?point .
+
+		  # distance to centroid
+		  BIND(geof:distance(?point, ?centroid, uom:meter) as ?distance_centroid)
+	  }

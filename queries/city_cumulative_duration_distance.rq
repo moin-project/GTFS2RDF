@@ -1,0 +1,14 @@
+# cumulative sum of travel time and distance per city
+PREFIX moin: <http://moin-project.org/data/>
+PREFIX moino: <http://moin-project.org/ontology/>
+
+SELECT 	?city
+	(sum(?duration) AS ?agg_duration)
+	(sum(?distance) AS ?agg_distance) {
+  		?city moino:connectedTo ?target . 
+  		<<?city moino:connectedTo ?target >> 	moino:drivingDuration ?duration ;
+  			moino:drivingDistance ?distance ;
+  		
+  	}
+  	GROUP BY ?city
+  	ORDER BY ASC(?agg_duration)
